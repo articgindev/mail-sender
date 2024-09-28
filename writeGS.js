@@ -1,86 +1,36 @@
 import { google } from 'googleapis';
-import { v2 as cloudinary } from 'cloudinary';
-import axios from 'axios';
+import dotenv from 'dotenv';
 
-// Configura Cloudinary con tus credenciales de API
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+// Cargar variables de entorno
+dotenv.config();
+
+
+// Importa el archivo JSON con el assertion de tipo JSON
+import credentials from './google.json' assert { type: 'json' };
+
+const auth = new google.auth.GoogleAuth({
+  credentials,  // Ya no necesitas el keyFile, puedes pasar el objeto de credenciales directamente
+  scopes: ['https://www.googleapis.com/auth/spreadsheets'],
 });
 
-// Función para generar una URL firmada de Cloudinary para acceder al archivo JSON
-const getSignedUrl = () => {
+// Función asíncrona para apendear datos en la hoja de Google Sheets
+export async function writeToSheet(values) {
+  const sheets = google.sheets({ version: 'v4', auth });
+  const spreadsheetId = process.env.VITE_SPREADSHEET_ID;
+  const range = 'Payments!A2';
+  const valueInputOption = 'USER_ENTERED';
+
+  const resource = { values };
+
   try {
-    const signedUrl = cloudinary.url('google_uv3o9e.json', {
-      resource_type: 'raw',
-      type: 'authenticated', // Requiere autenticación para acceder
-      sign_url: true,        // Firma la URL
+    const response = await sheets.spreadsheets.values.append({
+      spreadsheetId,
+      range,
+      valueInputOption,
+      resource,
     });
-
-    return signedUrl;
+    console.log('Datos añadidos a Google Sheets:', response.data);
   } catch (error) {
-    console.error('Error generando la URL firmada:', error);
-    throw error;
+    console.error('Error al escribir en Google Sheets:', error);
   }
-};
-
-// Función para obtener las credenciales de Google desde la URL firmada de Cloudinary
-const getGoogleCredentials = async () => {
-  try {
-    const signedUrl = getSignedUrl();
-
-    // Descargar el archivo JSON usando la URL firmada
-    const { data } = await axios.get(signedUrl);
-    return data;
-  } catch (error) {
-    console.error('Error obteniendo credenciales de Google desde Cloudinary:', error);
-    throw error;
-  }
-};
-
-// Autenticación con Google usando las credenciales descargadas
-const authenticateGoogle = async () => {
-  try {
-    const credentials = await getGoogleCredentials();
-
-    const auth = new google.auth.GoogleAuth({
-      credentials,
-      scopes: ['https://www.googleapis.com/auth/spreadsheets'],
-    });
-
-    return auth;
-  } catch (error) {
-    console.error('Error autenticando con Google:', error);
-    throw error;
-  }
-};
-
-// Configura Google Sheets API
-const sheets = async () => {
-  const auth = await authenticateGoogle();
-  return google.sheets({ version: 'v4', auth });
-};
-
-// Función para escribir datos en Google Sheets
-export const writeToSheet = async (data) => {
-  try {
-    const sheetsService = await sheets();
-
-    const request = {
-      spreadsheetId: process.env.VITE_SPREADSHEET_ID, // ID de la hoja de cálculo de Google
-      range: 'Sheet1!A1',
-      valueInputOption: 'RAW',
-      resource: {
-        values: data,
-      },
-    };
-
-    // Usar la API de Google Sheets para añadir datos
-    await sheetsService.spreadsheets.values.append(request);
-    console.log('Datos escritos en Google Sheets correctamente.');
-  } catch (error) {
-    console.error('Error escribiendo en Google Sheets:', error);
-    throw error;
-  }
-};
+}
