@@ -1,27 +1,28 @@
 import { google } from 'googleapis';
 
+// Parse the credentials from the environment variable
+const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
+
 const auth = new google.auth.GoogleAuth({
-  credentials: {
-    private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-    client_email: process.env.GOOGLE_CLIENT_EMAIL,
-  },
+  credentials,
   scopes: ['https://www.googleapis.com/auth/spreadsheets'],
 });
 
-const sheets = google.sheets({ version: 'v4', auth });
-
 export const writeToSheet = async (data) => {
   try {
-    const response = await sheets.spreadsheets.values.append({
-      spreadsheetId: process.env.VITE_SPREADSHEET_ID,
-      range: 'Payments!A1',
+    const sheets = google.sheets({ version: 'v4', auth });
+    const spreadsheetId = process.env.VITE_SPREADSHEET_ID;
+
+    await sheets.spreadsheets.values.append({
+      spreadsheetId,
+      range: 'Sheet1!A1',
       valueInputOption: 'USER_ENTERED',
-      resource: { values: data },
+      resource: {
+        values: data,
+      },
     });
-    console.log('Datos añadidos a Google Sheets:', response.data.updates);
-    return response.data.updates;
+    console.log('Data written to Google Sheets successfully');
   } catch (error) {
-    console.error('Error escribiendo en Google Sheets:', error);
-    throw error;
+    console.error('Error writing to Google Sheets:', error);
   }
 };
