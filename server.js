@@ -28,6 +28,20 @@ mongoose.connect(mongoDBURL)
     console.error('Error en la conexión a la base de datos:', error);
   });
 
+app.get('/run-tasks', async (req, res) => {
+  try {
+    // Sincronización de pagos con Google Sheets
+    await syncPaymentsWithGoogleSheets();
+    // Enviar correos de confirmación
+    await sendConfirmationEmails();
+
+    res.status(200).send("Tareas ejecutadas correctamente.");
+  } catch (error) {
+    console.error('Error ejecutando tareas:', error);
+    res.status(500).send('Error ejecutando tareas.');
+  }
+});
+
 // Rutas HTTP
 app.post("/send-email", async (req, res) => {
   const { to, subject, text } = req.body;
