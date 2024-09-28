@@ -1,6 +1,5 @@
 import { google } from 'googleapis';
 import dotenv from 'dotenv';
-
 // Cargar variables de entorno
 dotenv.config();
 
