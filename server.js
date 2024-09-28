@@ -41,9 +41,11 @@ app.post("/send-email", async (req, res) => {
 });
 
 // Start the server
-app.listen(3000, () => {
-  console.log(`Server is running on http://localhost:3000`);
+// En local Vercel gestionará el puerto, por lo que no hace falta el listen
+app.listen(process.env.PORT || 3000, () => {
+  console.log(`Server is running...`);
 });
+
 
 // Función para sincronizar pagos con Google Sheets
 const syncPaymentsWithGoogleSheets = async () => {
