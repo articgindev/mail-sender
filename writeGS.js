@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 // Cargar variables de entorno
 dotenv.config();
 
-
 // Importa el archivo JSON con el assertion de tipo JSON
 import credentials from './google.json' assert { type: 'json' };
 
