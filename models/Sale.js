@@ -20,7 +20,8 @@ const saleSchema = new mongoose.Schema({
     streets: { type: String, required: true },
     contact: { type: String, default: 'N/A' },
     notes: { type: String, default: 'N/A' },
-    tipoVivienda: { type: String, required: true, default: 'casa' }, // Campo agregado para tipoVivienda
+    tipoVivienda: { type: String, required: true, default: 'casa' },
+    piso: { type: String, required: true, default: '' },
   },
   paymentStatus: {
     type: String,

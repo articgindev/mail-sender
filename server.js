@@ -149,7 +149,6 @@ const sendConfirmationEmails = async () => {
       const { personalData, total, postalCode, deliveryDate, paymentId, quantity } = saleData;
 
       const emailBody = `
-        <h1>🥂Tu Artic está en camino🥂</h1>
         <p>Hola ${personalData.name},</p>
         <p>¡Gracias por tu compra! 🥳 Tu Artic está en camino, y no podemos esperar a que lo pruebes. Gracias por confiar en nosotros y ser parte de esta aventura.</p>
         
