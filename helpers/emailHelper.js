@@ -20,7 +20,7 @@ const emailHelper = async (to, subject, text, htmlContent) => {
   let mailOptions = {
     from: userSender,
     to: to,
-    subject: `No Responder - ${subject}`,  // Agregar "No Responder" al asunto
+    subject,
     text: text,
     html: htmlContent,  // Usar contenido HTML
   };
