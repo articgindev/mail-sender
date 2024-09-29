@@ -16,12 +16,13 @@ const ConsolidatedSaleDataSchema = new mongoose.Schema({
     city: { type: String },
     streets: { type: String },
     contact: { type: String },
-    notes: { type: String }
+    notes: { type: String },
+    tipoVivienda: { type: String, required: true }, // Agregado tipoVivienda
   },
   postalCode: { type: String },
   deliveryDate: { type: String },
   emailSent: { type: Boolean, default: false },
-  quantity: { type: Number, required: true }  // Agrega la cantidad de gines
+  quantity: { type: Number, required: true }, // Cantidad de botellas
 });
 
 const ConsolidatedSaleData = mongoose.model('ConsolidatedSaleData', ConsolidatedSaleDataSchema);

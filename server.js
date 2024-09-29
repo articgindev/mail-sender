@@ -9,7 +9,6 @@ import Cart from './models/Cart.js';
 import ConsolidatedSaleData from './models/ConsolidatedSaleData.js';
 import { writeToSheet } from './writeGS.js';
 
-
 dotenv.config();
 
 const app = express();
@@ -42,24 +41,10 @@ app.get('/run-tasks', async (req, res) => {
   }
 });
 
-// Rutas HTTP
-app.post("/send-email", async (req, res) => {
-  const { to, subject, text } = req.body;
-
-  try {
-    let info = await emailHelper(to, subject, text);
-    res.status(200).send(`Email sent: ${info.response}`);
-  } catch (error) {
-    res.status(500).send("Error sending email");
-  }
-});
-
 // Start the server
-// En local Vercel gestionará el puerto, por lo que no hace falta el listen
 app.listen(process.env.PORT || 3000, () => {
   console.log(`Server is running...`);
 });
-
 
 // Función para sincronizar pagos con Google Sheets
 const syncPaymentsWithGoogleSheets = async () => {
@@ -89,10 +74,9 @@ const syncPaymentsWithGoogleSheets = async () => {
           continue;
         }
 
-        // Aquí obtenemos la cantidad del carrito correctamente
         const postalCode = cart.postalCode || 'Sin código postal';
         const deliveryDate = cart.deliveryDate || 'Sin fecha de entrega';
-        const quantity = cart.quantity || 1;  // Asegúrate de obtener la cantidad desde el carrito
+        const quantity = cart.quantity || 1;
 
         const dataToWrite = [
           payment.paymentId,
@@ -110,16 +94,16 @@ const syncPaymentsWithGoogleSheets = async () => {
           sale.personalData.streets,
           sale.personalData.contact,
           sale.personalData.notes,
+          sale.personalData.tipoVivienda,  // Agregar tipoVivienda en los datos a Google Sheets
           postalCode,
           deliveryDate,
-          quantity  // Añadir la cantidad al escribir los datos
+          quantity,
         ];
 
         console.log('Escribiendo los siguientes datos en Google Sheets:', dataToWrite);
         await writeToSheet([dataToWrite]);
         console.log('Datos escritos exitosamente en Google Sheets.');
 
-        // Guardamos la cantidad correcta en ConsolidatedSaleData
         const consolidatedData = new ConsolidatedSaleData({
           paymentId: payment.paymentId,
           external_reference: payment.external_reference,
@@ -129,8 +113,8 @@ const syncPaymentsWithGoogleSheets = async () => {
           personalData: sale.personalData,
           postalCode,
           deliveryDate,
-          quantity,  // Almacenar la cantidad en ConsolidatedSaleData
-          emailSent: false,  // Inicialmente, emailSent es false
+          quantity,
+          emailSent: false,
         });
 
         await consolidatedData.save();
@@ -144,15 +128,12 @@ const syncPaymentsWithGoogleSheets = async () => {
       console.log('No se encontraron nuevos pagos no sincronizados en la última hora.');
     }
 
-    // Llamada para enviar correos
     await sendConfirmationEmails();
 
   } catch (error) {
     console.error('Error al sincronizar pagos con Google Sheets:', error);
   }
 };
-
-
 
 // Función para enviar correos de confirmación de compra
 const sendConfirmationEmails = async () => {
@@ -174,9 +155,10 @@ const sendConfirmationEmails = async () => {
         
         <h2>Detalles:</h2>
         <ul>
-          <li><strong>Producto:</strong> Artic Gin ${quantity} Botella(s)</li>  <!-- Utilizar la cantidad correcta -->
+          <li><strong>Producto:</strong> Artic Gin ${quantity} Botella(s)</li>
           <li><strong>Fecha de entrega:</strong> ${deliveryDate}</li>
           <li><strong>Lugar de entrega:</strong> ${personalData.address} ${personalData.altura}, ${personalData.city}</li>
+          <li><strong>Tipo de vivienda:</strong> ${personalData.tipoVivienda === 'depto' ? 'Departamento' : 'Casa'}</li> <!-- Mostrar tipo de vivienda -->
         </ul>
 
         <p>Estamos seguros de que te va a encantar. Mientras tanto, si tienes alguna duda o simplemente queres hablar de gin, ¡escríbinos!</p>
@@ -209,7 +191,6 @@ const sendConfirmationEmails = async () => {
             <li><strong>Teléfono del cliente:</strong> ${personalData.cel}</li>
             <li><strong>Error:</strong> ${error.message}</li>
           </ul>
-          <p>Por favor, verifica enviando un mensaje al número <strong>${personalData.cel}</strong>.</p>
         `;
 
         try {
@@ -224,8 +205,6 @@ const sendConfirmationEmails = async () => {
     console.error("Error al enviar correos de confirmación:", error);
   }
 };
-
-
 
 // Programar la sincronización cada minuto usando cron
 cron.schedule('*/1 * * * *', async () => {
