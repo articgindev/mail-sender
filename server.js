@@ -156,7 +156,7 @@ const sendConfirmationEmails = async () => {
         <ul>
           <li><strong>Producto:</strong> Artic Gin ${quantity} Botella(s)</li>
           <li><strong>Fecha de entrega:</strong> ${deliveryDate}</li>
-          <li><strong>Lugar de entrega:</strong> ${personalData.address} ${personalData.altura}, ${personalData.city}</li>
+          <li><strong>Lugar de entrega:</strong> ${personalData.address} ${personalData.altura}${personalData.tipoVivienda === 'depto' && personalData.piso ? `, Piso ${personalData.piso}` : ''}, ${personalData.city}</li>
           <li><strong>Tipo de vivienda:</strong> ${personalData.tipoVivienda === 'depto' ? 'Departamento' : 'Casa'}</li> <!-- Mostrar tipo de vivienda -->
         </ul>
 
