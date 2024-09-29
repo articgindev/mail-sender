@@ -157,7 +157,6 @@ const sendConfirmationEmails = async () => {
           <li><strong>Producto:</strong> Artic Gin ${quantity} Botella(s)</li>
           <li><strong>Fecha de entrega:</strong> ${deliveryDate}</li>
           <li><strong>Lugar de entrega:</strong> ${personalData.address} ${personalData.altura}${personalData.tipoVivienda === 'depto' && personalData.piso ? `, Piso ${personalData.piso}` : ''}, ${personalData.city}</li>
-          <li><strong>Tipo de vivienda:</strong> ${personalData.tipoVivienda === 'depto' ? 'Departamento' : 'Casa'}</li> <!-- Mostrar tipo de vivienda -->
         </ul>
 
         <p>Estamos seguros de que te va a encantar. Mientras tanto, si tienes alguna duda o simplemente queres hablar de gin, ¡escríbinos!</p>
