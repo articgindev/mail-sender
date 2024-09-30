@@ -18,7 +18,7 @@ const ConsolidatedSaleDataSchema = new mongoose.Schema({
     contact: { type: String },
     notes: { type: String },
     tipoVivienda: { type: String, required: true },
-    piso: { type: String, required: true },
+    piso: { type: String },
   },
   postalCode: { type: String },
   deliveryDate: { type: String },
