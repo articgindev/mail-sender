@@ -94,7 +94,8 @@ const syncPaymentsWithGoogleSheets = async () => {
           sale.personalData.streets,
           sale.personalData.contact,
           sale.personalData.notes,
-          sale.personalData.tipoVivienda,  // Agregar tipoVivienda en los datos a Google Sheets
+          sale.personalData.tipoVivienda,
+          sale.personalData.piso,
           postalCode,
           deliveryDate,
           quantity,
