@@ -137,9 +137,11 @@ const syncPaymentsWithGoogleSheets = async () => {
 };
 
 // Función para enviar correos de confirmación de compra
+// Función para enviar correos de confirmación de compra
 const sendConfirmationEmails = async () => {
   try {
-    const unsentEmails = await ConsolidatedSaleData.find({ emailSent: false });
+    // Modificar la consulta para incluir status 'approved' y emailSent = false
+    const unsentEmails = await ConsolidatedSaleData.find({ emailSent: false, status: 'approved' });
 
     if (unsentEmails.length === 0) {
       console.log("No hay correos pendientes de envío.");
@@ -204,6 +206,7 @@ const sendConfirmationEmails = async () => {
     console.error("Error al enviar correos de confirmación:", error);
   }
 };
+
 
 // Programar la sincronización cada minuto usando cron
 cron.schedule('*/1 * * * *', async () => {
